@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 7bogdann/postgres15_ru
+    container_name: my_postgres15
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=qwerty
+      - POSTGRES_DB=mydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data  # Храним базу в докере
+      - ./postgresql.conf:/etc/postgresql/postgresql.conf  # Пробрасываем конфиг
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Пробрасываем инициализацию
+    networks:
+      - my_network
+    command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf" ]
+    restart: unless-stopped  # Ожидаем автоматический рестарт, если контейнер выйдет из строя
+
+volumes:
+  data:
+    driver: local
+
+networks:
+  my_network:
+    driver: bridge
